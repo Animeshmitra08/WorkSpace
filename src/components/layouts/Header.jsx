@@ -30,7 +30,7 @@ const Header = ({ toggleSidebar }) => {
         >
           <Menu size={20} />
         </button>
-        <h1 className="text-xl font-bold">DevVault</h1>
+        <h1 className="text-xl font-bold">My WorkSpace</h1>
       </div>
       <div className="flex items-center space-x-3">
         <div className="relative">
