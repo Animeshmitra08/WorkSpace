@@ -1,4 +1,3 @@
-// components/editor/CodeEditor.jsx
 import React, { useEffect, useRef } from 'react';
 import { X, Save, Edit } from 'lucide-react';
 import * as monaco from 'monaco-editor';
@@ -55,34 +54,34 @@ const CodeEditor = () => {
   };
   
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
-      <div className="bg-white rounded-lg shadow-xl w-10/12 h-5/6 flex flex-col">
-        <div className="p-3 border-b flex justify-between items-center">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-10">
+      <div className="bg-white rounded-xl shadow-2xl w-10/12 h-5/6 flex flex-col overflow-hidden">
+        <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-[#EDF6F9]">
           <div className="flex items-center">
             <FileIcon fileType={selectedFile.type} />
-            <h3 className="ml-2 font-medium">{selectedFile.name}</h3>
+            <h3 className="ml-2.5 font-medium text-[#006D77]">{selectedFile.name}</h3>
           </div>
-          <div className="flex space-x-2">
+          <div className="flex space-x-3">
             {isEditing ? (
               <button 
                 onClick={handleSave}
-                className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 flex items-center"
+                className="px-4 py-1.5 bg-[#83C5BE] text-white rounded-full hover:bg-[#83C5BE]/80 flex items-center transition-colors shadow-sm"
               >
-                <Save size={16} className="mr-1" />
+                <Save size={16} className="mr-1.5" />
                 Save
               </button>
             ) : (
               <button 
                 onClick={() => setIsEditing(true)}
-                className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center"
+                className="px-4 py-1.5 bg-[#006D77] text-white rounded-full hover:bg-[#006D77]/80 flex items-center transition-colors shadow-sm"
               >
-                <Edit size={16} className="mr-1" />
+                <Edit size={16} className="mr-1.5" />
                 Edit
               </button>
             )}
             <button 
               onClick={() => setSelectedFile(null)}
-              className="p-1 rounded hover:bg-gray-100"
+              className="p-1.5 rounded-full hover:bg-gray-200 text-gray-600 transition-colors"
             >
               <X size={20} />
             </button>
@@ -92,7 +91,7 @@ const CodeEditor = () => {
           {isEditing ? (
             <div ref={containerRef} className="w-full h-full" />
           ) : (
-            <pre className="w-full h-full p-4 font-mono text-sm overflow-auto">
+            <pre className="w-full h-full p-5 font-mono text-sm overflow-auto bg-[#EDF6F9]/50 border-t border-gray-100">
               {selectedFile.content}
             </pre>
           )}

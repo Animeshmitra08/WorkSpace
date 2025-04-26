@@ -1,4 +1,3 @@
-// components/auth/Auth.jsx
 import React, { useState, useEffect } from 'react';
 import useAuthStore from '../../store/authStore';
 import useFileStore from '../../store/fileStore';
@@ -45,10 +44,10 @@ const Auth = ({ children }) => {
   
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
+      <div className="flex items-center justify-center h-screen bg-[#EDF6F9]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-800 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading DevVault...</p>
+          <div className="animate-spin rounded-full h-14 w-14 border-b-2 border-[#006D77] mx-auto"></div>
+          <p className="mt-5 text-[#006D77] font-medium">Loading DevVault...</p>
         </div>
       </div>
     );
@@ -56,11 +55,13 @@ const Auth = ({ children }) => {
   
   if (!isAuthenticated) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">DevVault</h1>
-        <p className="text-gray-600 mb-8">Your secure code vault in the cloud</p>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[#006D77] to-[#83C5BE]">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-white mb-3">DevVault</h1>
+          <p className="text-[#EDF6F9]">Your secure code vault in the cloud</p>
+        </div>
         
-        <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+        <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-2xl">
           {showRegister ? (
             <Register onToggle={() => setShowRegister(false)} />
           ) : (

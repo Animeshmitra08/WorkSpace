@@ -1,4 +1,3 @@
-// components/auth/Login.jsx
 import React, { useState } from 'react';
 import useAuthStore from '../../store/authStore';
 
@@ -24,49 +23,49 @@ const Login = ({ onToggle }) => {
   
   return (
     <div>
-      <h2 className="text-2xl font-bold text-center mb-6">Login to DevVault</h2>
+      <h2 className="text-2xl font-bold text-center mb-6 text-[#006D77]">Login to DevVault</h2>
       
       {error && (
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
+        <div className="bg-[#FFDDD2] border-l-4 border-[#E29578] text-[#E29578] p-4 rounded mb-6">
           {error}
         </div>
       )}
       
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label className="block text-[#006D77] text-sm font-medium mb-2" htmlFor="email">
             Email
           </label>
           <input
             id="email"
             type="email"
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Email address"
+            className="w-full px-4 py-2.5 border border-gray-200 rounded-lg bg-[#EDF6F9] focus:outline-none focus:ring-2 focus:ring-[#83C5BE] focus:border-[#83C5BE] transition-colors"
+            placeholder="Your email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
         
-        <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+        <div>
+          <label className="block text-[#006D77] text-sm font-medium mb-2" htmlFor="password">
             Password
           </label>
           <input
             id="password"
             type="password"
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Password"
+            className="w-full px-4 py-2.5 border border-gray-200 rounded-lg bg-[#EDF6F9] focus:outline-none focus:ring-2 focus:ring-[#83C5BE] focus:border-[#83C5BE] transition-colors"
+            placeholder="Your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
         
-        <div className="flex items-center justify-between">
+        <div>
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            className="bg-[#006D77] hover:bg-[#006D77]/80 text-white font-medium py-2.5 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#83C5BE] w-full transition-all shadow-md"
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Signing in...' : 'Sign In'}
@@ -74,11 +73,11 @@ const Login = ({ onToggle }) => {
         </div>
       </form>
       
-      <div className="mt-4 text-center">
-        <p className="text-sm text-gray-600">
+      <div className="mt-6 text-center">
+        <p className="text-gray-600">
           Don't have an account?{' '}
           <button 
-            className="text-blue-600 hover:text-blue-800 font-medium"
+            className="text-[#006D77] hover:text-[#006D77]/80 font-medium"
             onClick={onToggle}
           >
             Register

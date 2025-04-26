@@ -22,41 +22,41 @@ const Header = ({ toggleSidebar }) => {
   };
   
   return (
-    <header className="bg-gray-800 text-white p-3 flex justify-between items-center shadow-md">
+    <header className="bg-[#006D77] text-white p-3 flex justify-between items-center shadow-lg">
       <div className="flex items-center">
         <button 
           onClick={toggleSidebar}
-          className="p-2 mr-2 rounded hover:bg-gray-700"
+          className="p-2 mr-2 rounded hover:bg-[#006D77]/80 transition-colors"
         >
           <Menu size={20} />
         </button>
         <h1 className="text-xl font-bold">DevVault</h1>
       </div>
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-3">
         <div className="relative">
           <input
             type="text"
             placeholder="Search files..."
-            className="py-1 px-3 pr-8 rounded text-gray-800 text-sm w-48 focus:outline-none"
+            className="py-1.5 px-3 pr-8 rounded-full bg-[#EDF6F9] text-gray-800 text-sm w-52 focus:outline-none focus:ring-2 focus:ring-[#83C5BE] transition-all"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <Search size={16} className="absolute right-2 top-1.5 text-gray-500" />
+          <Search size={16} className="absolute right-3 top-1.5 text-gray-500" />
         </div>
         <button 
-          className="bg-blue-600 py-1 px-3 rounded hover:bg-blue-700 flex items-center gap-1 text-sm"
+          className="bg-[#83C5BE] py-1.5 px-4 rounded-full hover:bg-[#83C5BE]/80 flex items-center gap-1.5 text-sm transition-colors"
           onClick={handleUpload}
         >
           <Upload size={16} />
           <span>Upload</span>
         </button>
         <div className="flex items-center ml-2">
-          <span className="mr-2 text-sm flex items-center">
-            <User size={16} className="mr-1" />
+          <span className="mr-3 text-sm flex items-center bg-[#006D77]/30 py-1.5 px-3 rounded-full">
+            <User size={16} className="mr-1.5" />
             {user?.email?.split('@')[0]}
           </span>
           <button 
-            className="bg-red-600 py-1 px-3 rounded hover:bg-red-700 flex items-center gap-1 text-sm"
+            className="bg-[#E29578] py-1.5 px-4 rounded-full hover:bg-[#E29578]/80 flex items-center gap-1.5 text-sm transition-colors"
             onClick={handleLogout}
           >
             <LogOut size={16} />
