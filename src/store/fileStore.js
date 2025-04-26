@@ -1,46 +1,70 @@
 // store/fileStore.js
 import { create } from 'zustand';
-import useUIStore from './uiStore';
-import useFolderStore from './folderStore';
-import { saveFile, deleteFile } from '../services/firebaseService';
+import {
+  saveFile as saveFileToFirebase,
+  deleteFile as deleteFileFromFirebase,
+  fetchFiles as fetchFilesFromFirebase
+} from '../services/firebaseService';
 
-// Initial files data
-const initialFiles = [
-  {
-    id: '1',
-    name: 'example.js',
-    type: 'javascript',
-    content: '// This is a JavaScript file\nconsole.log("Hello world!");',
-    folder: '/',
-    lastModified: new Date().toISOString()
-  },
-  {
-    id: '2',
-    name: 'styles.css',
-    type: 'css',
-    content: 'body {\n  font-family: sans-serif;\n  margin: 0;\n  padding: 20px;\n}',
-    folder: '/',
-    lastModified: new Date().toISOString()
-  },
-  {
-    id: '3',
-    name: 'notes.md',
-    type: 'markdown',
-    content: '# Project Notes\n\n- Add authentication\n- Implement file sharing\n- Create proper documentation',
-    folder: '/documents',
-    lastModified: new Date().toISOString()
+// Helper to determine file type and initial content
+const getFileTypeAndContent = (fileExtension) => {
+  let type = 'text';
+  let initialContent = '';
+  
+  // Set language and initial content based on extension
+  switch(fileExtension) {
+    case 'js':
+      type = 'javascript';
+      initialContent = '// JavaScript file\n\n';
+      break;
+    case 'html':
+      type = 'html';
+      initialContent = '<!DOCTYPE html>\n<html>\n<head>\n  <title>Title</title>\n</head>\n<body>\n  \n</body>\n</html>';
+      break;
+    case 'css':
+      type = 'css';
+      initialContent = '/* CSS Styles */\n\n';
+      break;
+    case 'py':
+      type = 'python';
+      initialContent = '# Python file\n\n';
+      break;
+    case 'md':
+      type = 'markdown';
+      initialContent = '# Markdown Document\n\n';
+      break;
+    default:
+      type = 'text';
+      initialContent = '';
   }
-];
+  
+  return { type, initialContent };
+};
 
 const useFileStore = create((set, get) => ({
   // State
-  files: initialFiles,
+  files: [],
   selectedFile: null,
+  isLoading: false,
+  error: null,
+  
+  // Load files from Firebase
+  fetchFiles: async () => {
+    try {
+      set({ isLoading: true, error: null });
+      const files = await fetchFilesFromFirebase();
+      set({ files, isLoading: false });
+      return files;
+    } catch (error) {
+      set({ error: error.message, isLoading: false });
+      console.error('Error fetching files:', error);
+      return [];
+    }
+  },
   
   // Actions
   setSelectedFile: (file) => {
     set({ selectedFile: file });
-    useUIStore.getState().setIsEditing(false);
   },
   
   updateFileContent: (content) => set((state) => ({
@@ -48,67 +72,69 @@ const useFileStore = create((set, get) => ({
   })),
   
   saveFile: async (file) => {
-    const updatedFile = {
-      ...file,
-      lastModified: new Date().toISOString()
-    };
-    
     try {
-      // In a real app, this would be an API call
-      await saveFile(updatedFile);
+      set({ isLoading: true, error: null });
+      const savedFile = await saveFileToFirebase(file);
       
       set((state) => {
-        const existingFileIndex = state.files.findIndex(f => f.id === file.id);
+        // Update existing file or add new one
+        const existingFileIndex = state.files.findIndex(f => f.id === savedFile.id);
+        let updatedFiles;
+        
         if (existingFileIndex >= 0) {
-          const updatedFiles = [...state.files];
-          updatedFiles[existingFileIndex] = updatedFile;
-          return { files: updatedFiles };
+          updatedFiles = [...state.files];
+          updatedFiles[existingFileIndex] = savedFile;
         } else {
-          const newFile = { ...updatedFile, id: Date.now().toString() };
-          return { files: [...state.files, newFile] };
+          updatedFiles = [...state.files, savedFile];
         }
+        
+        return { 
+          files: updatedFiles, 
+          isLoading: false,
+          selectedFile: savedFile
+        };
       });
       
-      useUIStore.getState().setIsEditing(false);
-      useUIStore.getState().showNotification(`Saved ${file.name}`, 'success');
-      return updatedFile;
+      return savedFile;
     } catch (error) {
-      useUIStore.getState().showNotification(`Failed to save: ${error.message}`, 'error');
-      return file;
+      set({ error: error.message, isLoading: false });
+      console.error('Error saving file:', error);
+      throw error;
     }
   },
   
-  createFile: (name) => {
+  createFile: async (name, folderPath) => {
     if (!name) {
-      useUIStore.getState().showNotification('Please enter a file name', 'error');
+      set({ error: 'Please enter a file name' });
       return null;
     }
 
-    const currentFolder = useFolderStore.getState().currentFolder;
     const fileExtension = name.includes('.') ? 
       name.split('.').pop().toLowerCase() : '';
     
-    const { type, initialContent } = get().getFileTypeAndContent(fileExtension);
+    const { type, initialContent } = getFileTypeAndContent(fileExtension);
 
     const newFile = {
       name: name,
       type: type,
       content: initialContent,
-      folder: currentFolder,
+      folder: folderPath,
       lastModified: new Date().toISOString()
     };
 
-    const savedFile = get().saveFile(newFile);
-    set({ selectedFile: savedFile });
-    useUIStore.getState().setIsEditing(true);
-    useUIStore.getState().showNotification(`Created ${name}`, 'success');
-    return savedFile;
+    try {
+      const savedFile = await get().saveFile(newFile);
+      return savedFile;
+    } catch (error) {
+      set({ error: error.message });
+      return null;
+    }
   },
   
   deleteFile: async (fileId) => {
     try {
-      // In a real app, this would be an API call
-      await deleteFile(fileId);
+      set({ isLoading: true, error: null });
+      await deleteFileFromFirebase(fileId);
       
       set((state) => {
         const updatedFiles = state.files.filter(file => file.id !== fileId);
@@ -118,65 +144,31 @@ const useFileStore = create((set, get) => ({
         
         return { 
           files: updatedFiles, 
-          selectedFile: updatedSelectedFile
+          selectedFile: updatedSelectedFile,
+          isLoading: false 
         };
       });
       
-      if (get().selectedFile === null) {
-        useUIStore.getState().setIsEditing(false);
-      }
-      
-      useUIStore.getState().showNotification('File deleted', 'info');
+      return true;
     } catch (error) {
-      useUIStore.getState().showNotification(`Failed to delete: ${error.message}`, 'error');
+      set({ error: error.message, isLoading: false });
+      console.error('Error deleting file:', error);
+      return false;
     }
   },
   
-  // Helpers
-  getFileTypeAndContent: (fileExtension) => {
-    let type = 'text';
-    let initialContent = '';
-    
-    // Set language and initial content based on extension
-    switch(fileExtension) {
-      case 'js':
-        type = 'javascript';
-        initialContent = '// JavaScript file\n\n';
-        break;
-      case 'html':
-        type = 'html';
-        initialContent = '<!DOCTYPE html>\n<html>\n<head>\n  <title>Title</title>\n</head>\n<body>\n  \n</body>\n</html>';
-        break;
-      case 'css':
-        type = 'css';
-        initialContent = '/* CSS Styles */\n\n';
-        break;
-      case 'py':
-        type = 'python';
-        initialContent = '# Python file\n\n';
-        break;
-      case 'md':
-        type = 'markdown';
-        initialContent = '# Markdown Document\n\n';
-        break;
-      default:
-        type = 'text';
-        initialContent = '';
-    }
-    
-    return { type, initialContent };
-  },
+  // Clear error
+  clearError: () => set({ error: null }),
   
-  // Selectors
-  getFilteredFiles: () => {
+  // Selectors  
+  getFilteredFiles: (folderPath, searchTerm = '') => {
     const { files } = get();
-    const { currentFolder } = useFolderStore.getState();
-    const { searchTerm } = useUIStore.getState();
     
     return files.filter(file => 
-      file.folder === currentFolder && 
-      (file.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-       file.type.toLowerCase().includes(searchTerm.toLowerCase()))
+      file.folder === folderPath && 
+      (searchTerm === '' || 
+        file.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        file.type.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   },
   

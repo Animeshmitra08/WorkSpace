@@ -1,19 +1,20 @@
-// components/FileEditor.jsx
+// components/editor/CodeEditor.jsx
 import React, { useEffect, useRef } from 'react';
 import { X, Save, Edit } from 'lucide-react';
 import * as monaco from 'monaco-editor';
-import useFileStore from '../store/fileStore';
+import useFileStore from '../../store/fileStore';
+import useUIStore from '../../store/uiStore';
 import FileIcon from './FileIcon';
 
 const CodeEditor = () => {
   const { 
     selectedFile, 
-    isEditing, 
-    setIsEditing, 
     setSelectedFile, 
     updateFileContent,
     saveFile 
   } = useFileStore();
+  
+  const { isEditing, setIsEditing } = useUIStore();
   
   const editorRef = useRef(null);
   const containerRef = useRef(null);
@@ -45,7 +46,7 @@ const CodeEditor = () => {
         editor.dispose();
       };
     }
-  }, [selectedFile, isEditing]);
+  }, [selectedFile, isEditing, updateFileContent]);
   
   if (!selectedFile) return null;
   

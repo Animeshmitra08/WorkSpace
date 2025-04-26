@@ -1,37 +1,65 @@
 // store/folderStore.js
 import { create } from 'zustand';
-import useUIStore from './uiStore';
-
-// Initial folders data
-const initialFolders = ['/', '/documents'];
+import { 
+  fetchFolders as fetchFoldersFromFirebase,
+  createFolder as createFolderInFirebase 
+} from '../services/firebaseService';
 
 const useFolderStore = create((set, get) => ({
   // State
-  folders: initialFolders,
+  folders: ['/'],
   currentFolder: '/',
+  isLoading: false,
+  error: null,
+  
+  // Load folders from Firebase
+  fetchFolders: async () => {
+    try {
+      set({ isLoading: true, error: null });
+      const folders = await fetchFoldersFromFirebase();
+      set({ folders, isLoading: false });
+      return folders;
+    } catch (error) {
+      set({ error: error.message, isLoading: false });
+      console.error('Error fetching folders:', error);
+      return [];
+    }
+  },
   
   // Actions
   setCurrentFolder: (folder) => set({ currentFolder: folder }),
   
-  createFolder: (name) => {
+  createFolder: async (name) => {
     if (!name) {
-      useUIStore.getState().showNotification('Please enter a folder name', 'error');
-      return;
+      set({ error: 'Please enter a folder name' });
+      return null;
     }
 
-    const currentFolder = get().currentFolder;
-    const folderPath = currentFolder === '/' ? 
-      `/${name}` : 
-      `${currentFolder}/${name}`;
-    
-    set((state) => {
-      if (!state.folders.includes(folderPath)) {
-        return { folders: [...state.folders, folderPath] };
-      }
-      return state;
-    });
-    
-    useUIStore.getState().showNotification(`Created folder ${name}`, 'success');
+    try {
+      set({ isLoading: true, error: null });
+      const currentFolder = get().currentFolder;
+      const folderPath = currentFolder === '/' ? 
+        `/${name}` : 
+        `${currentFolder}/${name}`;
+      
+      await createFolderInFirebase(folderPath);
+      
+      set((state) => {
+        if (!state.folders.includes(folderPath)) {
+          return { 
+            folders: [...state.folders, folderPath],
+            isLoading: false 
+          };
+        }
+        return { isLoading: false };
+      });
+      
+      return folderPath;
+    } catch (error) {
+      set({ error: error.message, isLoading: false });
+      console.error('Error creating folder:', error);
+      return null;
+    }
   },
   
   navigateUp: () => {
@@ -43,6 +71,9 @@ const useFolderStore = create((set, get) => ({
     const parentFolder = parts.length === 1 ? '/' : parts.join('/');
     set({ currentFolder: parentFolder });
   },
+  
+  // Clear error
+  clearError: () => set({ error: null }),
   
   // Selectors
   getSubFolders: () => {

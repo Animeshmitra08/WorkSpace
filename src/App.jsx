@@ -1,16 +1,16 @@
 // App.jsx
 import React, { useState } from 'react';
-import Header from './components/Header';
-import Sidebar from './components/Sidebar';
-import FolderNavigation from './components/FolderNavigation';
-import FileGrid from './components/FileGrid';
-import FileEditor from './components/FileEditor';
-import Notification from './components/Notification';
+import Header from './components/layouts/Header';
+import Sidebar from './components/layouts/Sidebar';
+import FolderNavigation from './components/file-manager/FolderNavigation';
+import FileGrid from './components/file-manager/FileGrid';
+import CodeEditor from './components/editor/CodeEditor';
+import Notification from './components/layouts/Notification';
 
 // Make sure to install the following packages:
 // npm install zustand monaco-editor lucide-react
 
-export default function FileManagementSystem() {
+export default function App() {
   const [showSidebar, setShowSidebar] = useState(true);
   
   const toggleSidebar = () => {
@@ -29,7 +29,7 @@ export default function FileManagementSystem() {
           <FolderNavigation />
           <div className="flex-1 flex flex-col overflow-hidden">
             <FileGrid />
-            <FileEditor />
+            <CodeEditor />
           </div>
         </main>
       </div>
