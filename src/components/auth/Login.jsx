@@ -23,7 +23,7 @@ const Login = ({ onToggle }) => {
   
   return (
     <div>
-      <h2 className="text-2xl font-bold text-center mb-6 text-[#006D77]">Login to DevVault</h2>
+      <h2 className="text-2xl font-bold text-center mb-6 text-[#006D77]">Login to My WorkSpace</h2>
       
       {error && (
         <div className="bg-[#FFDDD2] border-l-4 border-[#E29578] text-[#E29578] p-4 rounded mb-6">

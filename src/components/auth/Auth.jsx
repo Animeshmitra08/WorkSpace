@@ -57,7 +57,7 @@ const Auth = ({ children }) => {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[#006D77] to-[#83C5BE]">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-3">DevVault</h1>
+          <h1 className="text-4xl font-bold text-white mb-3">My WorkSpace</h1>
           <p className="text-[#EDF6F9]">Your secure code vault in the cloud</p>
         </div>
         
