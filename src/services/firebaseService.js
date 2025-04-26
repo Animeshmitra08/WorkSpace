@@ -14,7 +14,8 @@ import {
   updateDoc, 
   deleteDoc, 
   query, 
-  where 
+  where,
+  getDoc
 } from 'firebase/firestore';
 import { auth, storage, db } from '../config/firebase';
 
@@ -200,15 +201,86 @@ export const initializeUserFolders = async () => {
     const user = auth.currentUser;
     if (!user) throw new Error('User not authenticated');
     
-    const defaultFolders = ['/', '/documents'];
+    const defaultFolders = ['/', '/documents', '/code'];
     
-    for (const folder of defaultFolders) {
-      await createFolder(folder);
-    }
+    // Create default folders for the user
+    const promises = defaultFolders.map(folder => createFolder(folder));
+    await Promise.all(promises);
+    
+    // Create a welcome file
+    const welcomeFile = {
+      name: 'welcome.md',
+      type: 'markdown',
+      content: `# Welcome to DevVault!\n\nThis is your personal code vault in the cloud.\n\n## Features\n\n- Create and edit code files\n- Organize your files in folders\n- Secure authentication\n- Real-time sync with Firebase\n\nGet started by creating your first file or folder using the sidebar.`,
+      folder: '/',
+      lastModified: new Date().toISOString()
+    };
+    
+    await saveFile(welcomeFile);
     
     return defaultFolders;
   } catch (error) {
     console.error('Error initializing user folders:', error);
+    throw error;
+  }
+};
+
+// NEW FUNCTION: Check if a file exists
+export const checkFileExists = async (fileName, folderPath) => {
+  try {
+    const user = auth.currentUser;
+    if (!user) throw new Error('User not authenticated');
+    
+    const userId = user.uid;
+    const q = query(
+      filesCollection, 
+      where('userId', '==', userId),
+      where('folder', '==', folderPath),
+      where('name', '==', fileName)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    return !querySnapshot.empty;
+  } catch (error) {
+    console.error('Error checking if file exists:', error);
+    throw error;
+  }
+};
+
+// NEW FUNCTION: Get file by ID
+export const getFileById = async (fileId) => {
+  try {
+    const fileRef = doc(db, 'files', fileId);
+    const fileSnapshot = await getDoc(fileRef);
+    
+    if (fileSnapshot.exists()) {
+      return { id: fileSnapshot.id, ...fileSnapshot.data() };
+    } else {
+      throw new Error('File not found');
+    }
+  } catch (error) {
+    console.error('Error getting file by ID:', error);
+    throw error;
+  }
+};
+
+// NEW FUNCTION: List files in a specific folder
+export const listFilesInFolder = async (folderPath) => {
+  try {
+    const user = auth.currentUser;
+    if (!user) throw new Error('User not authenticated');
+    
+    const userId = user.uid;
+    const q = query(
+      filesCollection, 
+      where('userId', '==', userId),
+      where('folder', '==', folderPath)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error('Error listing files in folder:', error);
     throw error;
   }
 };

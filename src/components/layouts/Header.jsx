@@ -1,13 +1,24 @@
 // components/layout/Header.jsx
 import React from 'react';
-import { Menu, Search, Upload } from 'lucide-react';
+import { Menu, Search, Upload, LogOut, User } from 'lucide-react';
 import useUIStore from '../../store/uiStore';
+import useAuthStore from '../../store/authStore';
 
-const Header = () => {
-  const { toggleSidebar, searchTerm, setSearchTerm, showNotification } = useUIStore();
+const Header = ({ toggleSidebar }) => {
+  const { searchTerm, setSearchTerm, showNotification } = useUIStore();
+  const { user, logout } = useAuthStore();
   
   const handleUpload = () => {
     showNotification('Upload would connect to Firebase Storage in a real app', 'info');
+  };
+  
+  const handleLogout = async () => {
+    try {
+      await logout();
+      showNotification('Successfully logged out', 'success');
+    } catch (error) {
+      showNotification('Logout failed: ' + error.message, 'error');
+    }
   };
   
   return (
@@ -39,6 +50,19 @@ const Header = () => {
           <Upload size={16} />
           <span>Upload</span>
         </button>
+        <div className="flex items-center ml-2">
+          <span className="mr-2 text-sm flex items-center">
+            <User size={16} className="mr-1" />
+            {user?.email?.split('@')[0]}
+          </span>
+          <button 
+            className="bg-red-600 py-1 px-3 rounded hover:bg-red-700 flex items-center gap-1 text-sm"
+            onClick={handleLogout}
+          >
+            <LogOut size={16} />
+            <span>Logout</span>
+          </button>
+        </div>
       </div>
     </header>
   );

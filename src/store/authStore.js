@@ -2,6 +2,27 @@
 import { create } from 'zustand';
 import { signIn, signUp, signOut, getCurrentUser, onAuthChange } from '../services/authService';
 
+const getErrorMessage = (error) => {
+  switch (error.code) {
+    case 'auth/invalid-email':
+      return 'Invalid email address format';
+    case 'auth/user-disabled':
+      return 'This account has been disabled';
+    case 'auth/user-not-found':
+      return 'No account found with this email';
+    case 'auth/wrong-password':
+      return 'Incorrect password';
+    case 'auth/email-already-in-use':
+      return 'Email is already in use by another account';
+    case 'auth/weak-password':
+      return 'Password is too weak - use at least 6 characters';
+    case 'auth/network-request-failed':
+      return 'Network error - check your connection';
+    default:
+      return error.message || 'An unknown error occurred';
+  }
+};
+
 const useAuthStore = create((set) => ({
   // State
   user: null,
@@ -41,8 +62,9 @@ const useAuthStore = create((set) => ({
       set({ user, isAuthenticated: true, isLoading: false });
       return user;
     } catch (error) {
-      set({ error: error.message, isLoading: false });
-      throw error;
+      const errorMessage = getErrorMessage(error);
+      set({ error: errorMessage, isLoading: false });
+      throw new Error(errorMessage);
     }
   },
   
@@ -54,8 +76,9 @@ const useAuthStore = create((set) => ({
       set({ user, isAuthenticated: true, isLoading: false });
       return user;
     } catch (error) {
-      set({ error: error.message, isLoading: false });
-      throw error;
+      const errorMessage = getErrorMessage(error);
+      set({ error: errorMessage, isLoading: false });
+      throw new Error(errorMessage);
     }
   },
   
@@ -67,8 +90,9 @@ const useAuthStore = create((set) => ({
       set({ user: null, isAuthenticated: false, isLoading: false });
       return true;
     } catch (error) {
-      set({ error: error.message, isLoading: false });
-      throw error;
+      const errorMessage = getErrorMessage(error);
+      set({ error: errorMessage, isLoading: false });
+      throw new Error(errorMessage);
     }
   },
   
