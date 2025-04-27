@@ -6,6 +6,7 @@ import FolderNavigation from './components/file-manager/FolderNavigation';
 import FileGrid from './components/file-manager/FileGrid';
 import CodeEditor from './components/editor/CodeEditor';
 import Notification from './components/layouts/Notification';
+import FloatingUploadButton from './components/layouts/FloatingUploadButton';
 import Auth from './components/auth/Auth';
 
 // Make sure to install the following packages:
@@ -35,6 +36,8 @@ export default function App() {
             </div>
           </main>
         </div>
+        
+        <FloatingUploadButton />
       </div>
     </Auth>
   );

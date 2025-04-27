@@ -1,16 +1,12 @@
 // components/layout/Header.jsx
 import React from 'react';
-import { Menu, Search, Upload, LogOut, User } from 'lucide-react';
+import { Menu, Search, LogOut, User } from 'lucide-react';
 import useUIStore from '../../store/uiStore';
 import useAuthStore from '../../store/authStore';
 
 const Header = ({ toggleSidebar }) => {
   const { searchTerm, setSearchTerm, showNotification } = useUIStore();
   const { user, logout } = useAuthStore();
-  
-  const handleUpload = () => {
-    showNotification('Upload would connect to Firebase Storage in a real app', 'info');
-  };
   
   const handleLogout = async () => {
     try {
@@ -43,13 +39,6 @@ const Header = ({ toggleSidebar }) => {
           />
           <Search size={16} className="absolute right-3 top-1.5 text-gray-500" />
         </div>
-        <button 
-          className="bg-[#83C5BE] py-1.5 px-4 rounded-full hover:bg-[#83C5BE]/80 flex items-center gap-1.5 text-sm transition-colors"
-          onClick={handleUpload}
-        >
-          <Upload size={16} />
-          <span>Upload</span>
-        </button>
         <div className="flex items-center ml-2">
           <span className="mr-3 text-sm flex items-center bg-[#006D77]/30 py-1.5 px-3 rounded-full">
             <User size={16} className="mr-1.5" />
