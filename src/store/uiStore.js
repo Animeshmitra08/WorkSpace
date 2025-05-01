@@ -4,7 +4,7 @@ import { create } from 'zustand';
 const useUIStore = create((set) => ({
   // State
   showSidebar: true,
-  notification: { show: false, message: '', type: '' },
+  notification: null, // Change to null instead of an object with show property
   isEditing: false,
   searchTerm: '',
   
@@ -16,12 +16,10 @@ const useUIStore = create((set) => ({
   setSearchTerm: (term) => set({ searchTerm: term }),
   
   showNotification: (message, type = 'info') => {
-    set({ notification: { show: true, message, type } });
-    setTimeout(() => 
-      set({ notification: { show: false, message: '', type: '' } }), 
-      3000
-    );
-  }
+    set({ notification: { message, type } });
+  },
+  
+  clearNotification: () => set({ notification: null })
 }));
 
 export default useUIStore;

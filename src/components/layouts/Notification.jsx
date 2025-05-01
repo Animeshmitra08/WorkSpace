@@ -23,26 +23,26 @@ const Notification = () => {
   
   switch (notification.type) {
     case 'success':
-      bgColor = 'bg-[#83C5BE]/20';
+      bgColor = 'bg-[#83C5BE]';
       borderColor = 'border-[#83C5BE]';
       iconColor = 'text-[#83C5BE]';
       Icon = CheckCircle;
       break;
     case 'error':
-      bgColor = 'bg-[#E29578]/20';
+      bgColor = 'bg-[#E29578]';
       borderColor = 'border-[#E29578]';
       iconColor = 'text-[#E29578]';
       Icon = XCircle;
       break;
     case 'warning':
-      bgColor = 'bg-[#FFDDD2]/50';
+      bgColor = 'bg-[#FFDDD2]';
       borderColor = 'border-[#E29578]';
       iconColor = 'text-[#E29578]';
       Icon = AlertCircle;
       break;
     case 'info':
     default:
-      bgColor = 'bg-[#EDF6F9]/50';
+      bgColor = 'bg-[#EDF6F9]';
       borderColor = 'border-[#006D77]';
       iconColor = 'text-[#006D77]';
       Icon = Info;
